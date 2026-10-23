@@ -15,6 +15,7 @@ interface Props {
   playerRef: RefObject<PlayerHandle>;
   reactions: FloatingReaction[];
   countdown: number | null;
+  isOwner: boolean;
   onLocal: (action: PlaybackAction, time: number) => void;
   onOpenSearch: () => void;
 }
@@ -26,6 +27,7 @@ export default function RoomStage({
   playerRef,
   reactions,
   countdown,
+  isOwner,
   onLocal,
   onOpenSearch,
 }: Props) {
@@ -48,19 +50,19 @@ export default function RoomStage({
       )}
 
       {media?.kind === 'direct' && media.url && (
-        <DirectPlayer key={media.url} ref={playerRef} src={media.url} startAt={startAt} onLocal={onLocal} />
+        <DirectPlayer key={media.url} ref={playerRef} src={media.url} startAt={startAt} onLocal={onLocal} controls={isOwner} />
       )}
 
       {media?.kind === 'youtube' && media.videoId && (
-        <YouTubePlayer key={media.videoId} ref={playerRef} videoId={media.videoId} startAt={startAt} onLocal={onLocal} />
+        <YouTubePlayer key={media.videoId} ref={playerRef} videoId={media.videoId} startAt={startAt} onLocal={onLocal} controls={isOwner} />
       )}
 
       {media?.kind === 'catalog' && embedUrl && (
-        <EmbedPlayer src={embedUrl} title={media.title} sandbox={media.sandbox} />
+        <div className={isOwner ? 'h-full w-full' : 'pointer-events-none h-full w-full'}><EmbedPlayer src={embedUrl} title={media.title} sandbox={media.sandbox} /></div>
       )}
 
       {media?.kind === 'iframe' && media.url && (
-        <EmbedPlayer src={media.url} title={media.title} sandbox={media.sandbox} />
+        <div className={isOwner ? 'h-full w-full' : 'pointer-events-none h-full w-full'}><EmbedPlayer src={media.url} title={media.title} sandbox={media.sandbox} /></div>
       )}
 
       {/* تفاعلات طائرة */}

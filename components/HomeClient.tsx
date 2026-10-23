@@ -37,15 +37,10 @@ export default function HomeClient() {
   const createRoom = () => {
     setError('');
     if (!validName()) return;
-    let clientId = '';
-    try {
-      clientId = window.sessionStorage.getItem(CLIENT_KEY) ?? '';
-      if (!clientId) {
-        clientId = randomId();
-        window.sessionStorage.setItem(CLIENT_KEY, clientId);
-      }
-    } catch {
+    let clientId = readStorage(CLIENT_KEY) ?? '';
+    if (!clientId) {
       clientId = randomId();
+      writeStorage(CLIENT_KEY, clientId);
     }
     const roomId = generateRoomCode();
     writeStorage(`brotv:owner:${roomId}`, clientId);

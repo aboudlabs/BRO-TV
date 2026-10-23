@@ -234,7 +234,6 @@ export function useRoom(options: Options) {
       })
       .on('broadcast', { event: 'heartbeat' }, ({ payload }) => {
         const p = payload as HeartbeatEvent;
-        if (p.by === optsRef.current.name) return;
         const local = optsRef.current.getPlayerState();
         const targetTime = p.time + (p.playing ? Math.max(0, Date.now() - p.sentAt) / 1000 : 0);
         const drift = targetTime - local.time;
@@ -308,7 +307,7 @@ export function useRoom(options: Options) {
   );
 
   useEffect(() => {
-    if (!isOwner || status !== 'connected' || !media) return;
+    if (!isOwner || status !== 'connected' || !media || (media.kind !== 'direct' && media.kind !== 'youtube')) return;
     const timer = setInterval(() => {
       const state = optsRef.current.getPlayerState();
       send('heartbeat', {

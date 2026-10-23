@@ -53,11 +53,11 @@ export default function RoomStage({
       )}
 
       {media?.kind === 'catalog' && embedUrl && (
-        <div className={isOwner ? 'h-full w-full' : 'pointer-events-none h-full w-full'}><EmbedPlayer src={embedUrl} title={media.title} sandbox={media.sandbox} /></div>
+        <div className="h-full w-full"><EmbedPlayer src={embedUrl} title={media.title} sandbox={media.sandbox} /></div>
       )}
 
       {media?.kind === 'iframe' && media.url && (
-        <div className={isOwner ? 'h-full w-full' : 'pointer-events-none h-full w-full'}><EmbedPlayer src={media.url} title={media.title} sandbox={media.sandbox} /></div>
+        <div className="h-full w-full"><EmbedPlayer src={media.url} title={media.title} sandbox={media.sandbox} /></div>
       )}
 
       {/* تفاعلات طائرة */}
@@ -83,7 +83,7 @@ export default function RoomStage({
             {countdown > 0 ? countdown : '▶'}
           </span>
           <span className="mt-3 px-4 text-center text-sm font-bold text-champagne-100 sm:text-lg">
-            {countdown > 0 ? 'استعدّوا… سيبدأ الفيديو تلقائياً' : 'جاري التشغيل للجميع'}
+            {countdown > 0 ? 'استعدّوا… عند الصفر اضغطوا تشغيل إذا طلب السيرفر ذلك' : 'انتهى العدّ التنازلي — اضغط تشغيل داخل المشغّل عند الحاجة'}
           </span>
         </div>
       )}

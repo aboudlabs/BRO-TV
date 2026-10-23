@@ -41,13 +41,14 @@ interface Props {
   videoId: string;
   startAt: StartAt | null;
   onLocal: (action: PlaybackAction, time: number) => void;
+  controls?: boolean;
 }
 
 const YT_PLAYING = 1;
 const YT_PAUSED = 2;
 
 /** مشغل YouTube مع مزامنة (تشغيل/إيقاف/قفز) عبر YouTube IFrame API */
-const YouTubePlayer = forwardRef<PlayerHandle, Props>(function YouTubePlayer({ videoId, startAt, onLocal }, ref) {
+const YouTubePlayer = forwardRef<PlayerHandle, Props>(function YouTubePlayer({ videoId, startAt, onLocal, controls = true }, ref) {
   const hostRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<any>(null);
   const readyRef = useRef(false);
@@ -114,7 +115,7 @@ const YouTubePlayer = forwardRef<PlayerHandle, Props>(function YouTubePlayer({ v
           videoId,
           width: '100%',
           height: '100%',
-          playerVars: { rel: 0, playsinline: 1, modestbranding: 1, origin: window.location.origin },
+          playerVars: { rel: 0, playsinline: 1, modestbranding: 1, controls: controls ? 1 : 0, disablekb: controls ? 0 : 1, origin: window.location.origin },
           events: {
             onReady: () => {
               readyRef.current = true;
@@ -172,7 +173,7 @@ const YouTubePlayer = forwardRef<PlayerHandle, Props>(function YouTubePlayer({ v
       }
       playerRef.current = null;
     };
-  }, [videoId, applyNow]);
+  }, [videoId, applyNow, controls]);
 
   return (
     <div className="relative h-full w-full bg-black">

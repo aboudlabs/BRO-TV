@@ -74,7 +74,7 @@ function RoomView({ roomId, name, clientId, isOwner }: { roomId: string; name: s
     }),
   });
 
-  const { media, changeMedia, sendPlayback, sendSync, startCountdown } = room;
+  const { media, changeMedia, sendPlayback, startCountdown } = room;
 
   useEffect(() => {
     document.title = media ? `${media.title} · ${roomId} | BRO TV` : `${roomId} | BRO TV`;
@@ -128,13 +128,9 @@ function RoomView({ roomId, name, clientId, isOwner }: { roomId: string; name: s
   };
 
   const syncScene = () => {
-    if (!media) return;
-    if (media.kind === 'direct' || media.kind === 'youtube') {
-      sendSync(playerRef.current?.getTime() ?? 0, playerRef.current?.isPlaying() ?? false);
-    } else {
-      // المشغلات المضمّنة (iframe) لا يمكن التحكم بها — نستخدم عدّاً تنازلياً مشتركاً
-      startCountdown();
-    }
+    if (!media || !isOwner) return;
+    // العدّ التنازلي موحّد لكل أنواع المشغلات، ثم يرسل أمراً بالتشغيل تلقائياً.
+    startCountdown();
   };
 
   const isEmbed = media?.kind === 'catalog' || media?.kind === 'iframe';

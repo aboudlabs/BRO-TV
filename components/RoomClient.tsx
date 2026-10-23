@@ -32,6 +32,14 @@ export default function RoomClient({ roomId }: { roomId: string }) {
     setIdentity({ name: readStorage(NAME_KEY), clientId });
   }, []);
 
+  useEffect(() => {
+    if (!identity) return;
+    // If this browser created the room before identity persistence changed,
+    // migrate its local owner marker to the stable client ID.
+    const ownerKey = `brotv:owner:${roomId}`;
+    if (readStorage(ownerKey)) writeStorage(ownerKey, identity.clientId);
+  }, [identity, roomId]);
+
   if (!identity) {
     return <div className="min-h-screen" aria-busy="true" />;
   }
@@ -48,7 +56,7 @@ export default function RoomClient({ roomId }: { roomId: string }) {
     );
   }
 
-  const isOwner = readStorage(`brotv:owner:${roomId}`) === identity.clientId;
+  const isOwner = Boolean(readStorage(`brotv:owner:${roomId}`));
   return <RoomView roomId={roomId} name={identity.name} clientId={identity.clientId} isOwner={isOwner} />;
 }
 

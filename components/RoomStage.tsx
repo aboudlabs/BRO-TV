@@ -1,7 +1,6 @@
 'use client';
 
 import type { RefObject } from 'react';
-import { Search } from 'lucide-react';
 import DirectPlayer from '@/components/player/DirectPlayer';
 import EmbedPlayer from '@/components/player/EmbedPlayer';
 import YouTubePlayer from '@/components/player/YouTubePlayer';
@@ -17,7 +16,6 @@ interface Props {
   countdown: number | null;
   isOwner: boolean;
   onLocal: (action: PlaybackAction, time: number) => void;
-  onOpenSearch: () => void;
 }
 
 /** شاشة العرض: المشغل المناسب + التفاعلات الطائرة + العدّ التنازلي */
@@ -29,23 +27,20 @@ export default function RoomStage({
   countdown,
   isOwner,
   onLocal,
-  onOpenSearch,
 }: Props) {
   const embedUrl = media ? buildEmbedUrl(media) : null;
 
   return (
     <div className="glass relative aspect-video w-full min-w-0 overflow-hidden rounded-xl bg-black shadow-glow sm:rounded-2xl">
       {!media && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center">
-          <LogoMark size={88} className="!rounded-3xl opacity-90" />
-          <div>
-            <p className="text-lg font-extrabold text-champagne-100">لا يوجد شيء يُعرض بعد</p>
-            <p className="mt-1 text-sm text-champagne-200/60">اختر فيلماً أو مسلسلاً، أو الصق رابطاً — وسيظهر عند الجميع فوراً.</p>
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-3 text-center sm:gap-4 sm:p-6">
+          <LogoMark size={72} className="!h-14 !w-14 !rounded-2xl opacity-90 sm:!h-20 sm:!w-20 sm:!rounded-3xl" />
+          <div className="max-w-xl">
+            <p className="text-base font-extrabold text-champagne-100 sm:text-lg">لا يوجد شيء يُعرض بعد</p>
+            <p className="mx-auto mt-1 max-w-md text-xs leading-relaxed text-champagne-200/60 sm:text-sm">
+              اختر فيلماً أو مسلسلاً، أو الصق رابطاً — وسيظهر عند الجميع فوراً.
+            </p>
           </div>
-          <button type="button" onClick={onOpenSearch} className="btn-primary">
-            <Search className="h-4 w-4" />
-            ابحث في المكتبة
-          </button>
         </div>
       )}
 

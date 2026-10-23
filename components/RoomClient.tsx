@@ -186,7 +186,7 @@ function RoomView({ roomId, name, clientId, isOwner }: { roomId: string; name: s
               </div>
 
               <div className="flex flex-wrap gap-2">
-                <button type="button" className="btn-primary px-4 py-2.5 text-sm" onClick={() => setSearchOpen(true)} disabled={!isOwner}>
+                <button type="button" className="btn-primary px-4 py-2.5 text-sm" onClick={() => setSearchOpen(true)}>
                   <Clapperboard className="h-4 w-4" />
                   المكتبة والبحث
                 </button>

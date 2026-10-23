@@ -233,8 +233,7 @@ function RoomView({ roomId, name, clientId, isOwner }: { roomId: string; name: s
                     Sandbox: {media.sandbox ? 'مفعّل' : 'متوقف'}
                   </button>
                   <p className="text-xs leading-relaxed text-champagne-200/55">
-                    إذا لم يعمل الفيديو جرّب سيرفراً آخر، أو أوقف الـ Sandbox (بعض المشغلات ترفضه). التشغيل داخل الـ iframe
-                    يتم يدوياً عند كل شخص — استخدم «مزامنة المشهد» للعدّ التنازلي.
+                    إذا لم يعمل الفيديو جرّب سيرفراً آخر، أو أوقف الـ Sandbox (بعض المشغلات ترفضه). المزامنة توحّد توقيت العدّ التنازلي، لكن بعض السيرفرات الخارجية تتطلب أن يضغط كل شخص زر التشغيل داخل المشغّل.
                   </p>
                 </div>
               </div>

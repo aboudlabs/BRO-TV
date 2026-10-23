@@ -47,7 +47,7 @@ export default function RoomStage({
       )}
 
       {media?.kind === 'youtube' && media.videoId && (
-        <YouTubePlayer key={media.videoId} ref={playerRef} videoId={media.videoId} startAt={startAt} onLocal={onLocal} controls={isOwner} />
+        <YouTubePlayer key={media.videoId} ref={playerRef} videoId={media.videoId} startAt={startAt} onLocal={onLocal} controls />
       )}
 
       {media?.kind === 'catalog' && embedUrl && (

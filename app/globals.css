@@ -11,6 +11,45 @@
 html,
 body {
   min-height: 100%;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+img,
+video,
+iframe {
+  max-width: 100%;
+}
+
+button,
+input,
+textarea,
+select {
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .btn-primary,
+  .btn-ghost {
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .btn-primary {
+    padding-inline: 0.875rem;
+  }
+
+  .btn-ghost {
+    padding-inline: 0.75rem;
+  }
 }
 
 body {

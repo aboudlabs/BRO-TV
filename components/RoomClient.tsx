@@ -168,7 +168,6 @@ function RoomView({ roomId, name, clientId, isOwner }: { roomId: string; name: s
               countdown={room.countdown}
               isOwner={isOwner}
               onLocal={handleLocal}
-              onOpenSearch={() => setSearchOpen(true)}
             />
 
             {/* شريط المعلومات والتحكم */}

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AlertTriangle, LogIn, Plus, Popcorn, RefreshCw, Search, Users } from 'lucide-react';
 import { LogoMark } from '@/components/Logo';
 import { isSupabaseConfigured } from '@/lib/supabase';
-import { NAME_KEY, generateRoomCode, normalizeRoomCode, readStorage, writeStorage } from '@/lib/utils';
+import { CLIENT_KEY, NAME_KEY, generateRoomCode, normalizeRoomCode, randomId, readStorage, writeStorage } from '@/lib/utils';
 
 const FEATURES = [
   { icon: RefreshCw, title: 'مزامنة فورية', text: 'تشغيل وإيقاف وقفز لحظي بين الجميع.' },
@@ -37,7 +37,19 @@ export default function HomeClient() {
   const createRoom = () => {
     setError('');
     if (!validName()) return;
-    router.push(`/room/${generateRoomCode()}`);
+    let clientId = '';
+    try {
+      clientId = window.sessionStorage.getItem(CLIENT_KEY) ?? '';
+      if (!clientId) {
+        clientId = randomId();
+        window.sessionStorage.setItem(CLIENT_KEY, clientId);
+      }
+    } catch {
+      clientId = randomId();
+    }
+    const roomId = generateRoomCode();
+    writeStorage(`brotv:owner:${roomId}`, clientId);
+    router.push(`/room/${roomId}`);
   };
 
   const joinRoom = (e: React.FormEvent) => {

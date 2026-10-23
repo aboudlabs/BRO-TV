@@ -14,7 +14,6 @@ interface Props {
   playerRef: RefObject<PlayerHandle>;
   reactions: FloatingReaction[];
   countdown: number | null;
-  isOwner: boolean;
   onLocal: (action: PlaybackAction, time: number) => void;
 }
 
@@ -25,7 +24,6 @@ export default function RoomStage({
   playerRef,
   reactions,
   countdown,
-  isOwner,
   onLocal,
 }: Props) {
   const embedUrl = media ? buildEmbedUrl(media) : null;
@@ -45,7 +43,7 @@ export default function RoomStage({
       )}
 
       {media?.kind === 'direct' && media.url && (
-        <DirectPlayer key={media.url} ref={playerRef} src={media.url} startAt={startAt} onLocal={onLocal} controls={isOwner} />
+        <DirectPlayer key={media.url} ref={playerRef} src={media.url} startAt={startAt} onLocal={onLocal} controls />
       )}
 
       {media?.kind === 'youtube' && media.videoId && (

@@ -287,13 +287,12 @@ export function useRoom(options: Options) {
 
   const changeMedia = useCallback(
     (next: Media, reason: MediaChangeReason) => {
-      if (!isOwner) return;
       updateMedia(next);
       setStartAt(null);
       send('media', { media: next, by: name, reason } satisfies MediaEvent);
       pushSystem(describeMedia(reason, next, 'أنت'));
     },
-    [isOwner, name, pushSystem, send, updateMedia],
+    [name, pushSystem, send, updateMedia],
   );
 
   const sendPlayback = useCallback(

@@ -37,15 +37,15 @@ export default function RoomHeader({ roomId, members, status, selfId }: Props) {
 
   return (
     <header className="glass-strong sticky top-0 z-40 border-x-0 border-t-0">
-      <div className="mx-auto flex w-full max-w-[1600px] flex-wrap items-center justify-between gap-x-4 gap-y-2 px-3 py-2.5 sm:px-4 lg:px-6">
+      <div className="mx-auto flex w-full max-w-[1600px] flex-col items-stretch gap-2 px-3 py-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-x-4 sm:gap-y-2 sm:px-4 lg:px-6">
         <Link href="/" aria-label="BRO TV — الصفحة الرئيسية">
           <Wordmark size={40} textClassName="text-lg sm:text-xl" />
         </Link>
 
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 py-1 ps-3 pe-1">
+        <div className="flex min-w-0 items-center gap-2 sm:justify-center">
+          <div className="flex min-w-0 max-w-full items-center gap-2 rounded-xl border border-white/10 bg-white/5 py-1 ps-3 pe-1">
             <span className="text-xs text-champagne-200/60">الغرفة</span>
-            <span dir="ltr" className="font-extrabold tracking-widest text-champagne-200">
+            <span dir="ltr" className="truncate font-extrabold tracking-widest text-champagne-200">
               {roomId}
             </span>
             <button
@@ -62,7 +62,7 @@ export default function RoomHeader({ roomId, members, status, selfId }: Props) {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center justify-between gap-3 sm:justify-end">
           <span
             className={cn(
               'hidden items-center gap-1.5 text-xs sm:inline-flex',

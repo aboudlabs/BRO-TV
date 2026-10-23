@@ -43,6 +43,12 @@ interface SyncEvent {
   playing: boolean;
   by: string;
 }
+interface HeartbeatEvent {
+  time: number;
+  playing: boolean;
+  sentAt: number;
+  by: string;
+}
 interface StateEvent {
   to: string;
   media: Media;
@@ -226,6 +232,19 @@ export function useRoom(options: Options) {
         optsRef.current.onSync(p.time, p.playing);
         pushSystem(`🔄 ${p.by} زامن المشهد معك (${formatTime(p.time)})`);
       })
+      .on('broadcast', { event: 'heartbeat' }, ({ payload }) => {
+        const p = payload as HeartbeatEvent;
+        if (p.by === optsRef.current.name) return;
+        const local = optsRef.current.getPlayerState();
+        const targetTime = p.time + (p.playing ? Math.max(0, Date.now() - p.sentAt) / 1000 : 0);
+        const drift = targetTime - local.time;
+        if (Math.abs(drift) > 1.35 || local.playing !== p.playing) {
+          const action: PlaybackAction = local.playing !== p.playing
+            ? (p.playing ? 'play' : 'pause')
+            : 'seek';
+          optsRef.current.onPlayback({ action, time: targetTime });
+        }
+      })
       .on('broadcast', { event: 'countdown' }, ({ payload }) => {
         const p = payload as { by: string; startAt: number; time: number };
         runCountdown(p.startAt, p.time);
@@ -287,6 +306,21 @@ export function useRoom(options: Options) {
     },
     [],
   );
+
+  useEffect(() => {
+    if (!isOwner || status !== 'connected' || !media) return;
+    const timer = setInterval(() => {
+      const state = optsRef.current.getPlayerState();
+      send('heartbeat', {
+        time: state.time,
+        playing: state.playing,
+        sentAt: Date.now(),
+        by: optsRef.current.name,
+      } satisfies HeartbeatEvent);
+    }, 2000);
+    return () => clearInterval(timer);
+  }, [isOwner, status, media, send]);
+
 
   /* ------------------------- أفعال المستخدم الحالي ------------------------- */
 

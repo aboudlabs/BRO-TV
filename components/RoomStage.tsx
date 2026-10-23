@@ -34,7 +34,7 @@ export default function RoomStage({
   const embedUrl = media ? buildEmbedUrl(media) : null;
 
   return (
-    <div className="glass relative aspect-video w-full overflow-hidden rounded-2xl bg-black shadow-glow">
+    <div className="glass relative aspect-video w-full min-w-0 overflow-hidden rounded-xl bg-black shadow-glow sm:rounded-2xl">
       {!media && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center">
           <LogoMark size={88} className="!rounded-3xl opacity-90" />
@@ -84,11 +84,11 @@ export default function RoomStage({
       {/* العدّ التنازلي للمزامنة */}
       {countdown !== null && (
         <div className="pointer-events-none absolute inset-0 z-30 flex flex-col items-center justify-center bg-ink-950/65 backdrop-blur-sm">
-          <span key={countdown} className="animate-pop text-8xl font-black text-champagne-200 sm:text-9xl">
+          <span key={countdown} className="animate-pop text-7xl font-black text-champagne-200 sm:text-9xl">
             {countdown > 0 ? countdown : '▶'}
           </span>
-          <span className="mt-3 text-lg font-bold text-champagne-100">
-            {countdown > 0 ? 'استعدّوا… اضغطوا تشغيل عند الصفر' : 'شغّل الآن!'}
+          <span className="mt-3 px-4 text-center text-sm font-bold text-champagne-100 sm:text-lg">
+            {countdown > 0 ? 'استعدّوا… سيبدأ الفيديو تلقائياً' : 'جاري التشغيل للجميع'}
           </span>
         </div>
       )}

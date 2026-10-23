@@ -139,7 +139,7 @@ function RoomView({ roomId, name, clientId, isOwner }: { roomId: string; name: s
     <div className="flex min-h-screen flex-col">
       <RoomHeader roomId={roomId} members={room.members} status={room.status} selfId={clientId} />
 
-      <main className="mx-auto w-full max-w-[1600px] flex-1 p-3 sm:p-4 lg:p-6">
+      <main className="mx-auto w-full min-w-0 max-w-[1600px] flex-1 px-2 py-3 sm:p-4 lg:p-6">
         {room.status === 'unconfigured' && (
           <div className="mb-4 flex items-start gap-3 rounded-2xl border border-champagne-400/30 bg-champagne-400/10 p-4 text-sm text-champagne-100">
             <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-champagne-400" />
@@ -158,8 +158,8 @@ function RoomView({ roomId, name, clientId, isOwner }: { roomId: string; name: s
         )}
 
         {/* الشبكة: المشغل يسار/أعلى — الدردشة يمين/أسفل */}
-        <div dir="ltr" className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_380px]">
-          <section dir="rtl" className="min-w-0 space-y-4">
+        <div dir="ltr" className="grid min-w-0 grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-[minmax(0,1fr)_380px]">
+          <section dir="rtl" className="min-w-0 space-y-3 sm:space-y-4">
             <RoomStage
               media={media}
               startAt={room.startAt}
@@ -172,10 +172,10 @@ function RoomView({ roomId, name, clientId, isOwner }: { roomId: string; name: s
             />
 
             {/* شريط المعلومات والتحكم */}
-            <div className="glass flex flex-wrap items-center justify-between gap-3 rounded-2xl p-4">
+            <div className="glass flex min-w-0 flex-col items-stretch gap-3 rounded-2xl p-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:p-4">
               <div className="min-w-0">
                 <p className="text-xs text-champagne-200/55">يُعرض الآن</p>
-                <h1 dir="auto" className="truncate text-lg font-extrabold text-champagne-100">
+                <h1 dir="auto" className="break-words text-base font-extrabold text-champagne-100 sm:truncate sm:text-lg">
                   {media ? media.title : '—'}
                   {media?.type === 'series' && (
                     <span className="ms-2 text-sm font-semibold text-champagne-300">
@@ -185,12 +185,12 @@ function RoomView({ roomId, name, clientId, isOwner }: { roomId: string; name: s
                 </h1>
               </div>
 
-              <div className="flex flex-wrap gap-2">
-                <button type="button" className="btn-primary px-4 py-2.5 text-sm" onClick={() => setSearchOpen(true)}>
+              <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap">
+                <button type="button" className="btn-primary w-full px-4 py-2.5 text-sm sm:w-auto" onClick={() => setSearchOpen(true)}>
                   <Clapperboard className="h-4 w-4" />
                   المكتبة والبحث
                 </button>
-                <button type="button" className="btn-ghost" onClick={syncScene} disabled={!media || !isOwner}>
+                <button type="button" className="btn-ghost w-full sm:w-auto" onClick={syncScene} disabled={!media || !isOwner}>
                   {media && (media.kind === 'catalog' || media.kind === 'iframe') ? (
                     <Timer className="h-4 w-4" />
                   ) : (
@@ -203,7 +203,7 @@ function RoomView({ roomId, name, clientId, isOwner }: { roomId: string; name: s
 
             {/* السيرفرات + Sandbox */}
             {isEmbed && media && (
-              <div className="glass space-y-3 rounded-2xl p-4">
+              <div className="glass min-w-0 space-y-3 rounded-2xl p-3 sm:p-4">
                 {media.kind === 'catalog' && (
                   <div>
                     <p className="mb-2 flex items-center gap-2 text-sm font-bold text-champagne-100">
@@ -225,7 +225,7 @@ function RoomView({ roomId, name, clientId, isOwner }: { roomId: string; name: s
                   </div>
                 )}
 
-                <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                   <button type="button" onClick={toggleSandbox} className={cn('btn-chip', media.sandbox && 'btn-chip-active')}>
                     {media.sandbox ? <Shield className="h-4 w-4" /> : <ShieldOff className="h-4 w-4" />}
                     Sandbox: {media.sandbox ? 'مفعّل' : 'متوقف'}
@@ -243,7 +243,7 @@ function RoomView({ roomId, name, clientId, isOwner }: { roomId: string; name: s
             <CustomUrlBox onPlay={playCustom} />
           </section>
 
-          <aside dir="rtl" className="h-[520px] min-h-0 lg:sticky lg:top-24 lg:h-[calc(100vh-8rem)]">
+          <aside dir="rtl" className="h-[420px] min-h-0 min-w-0 sm:h-[480px] lg:sticky lg:top-24 lg:h-[calc(100vh-8rem)]">
             <Chat
               messages={room.messages}
               selfId={clientId}

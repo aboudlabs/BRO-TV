@@ -24,15 +24,10 @@ export default function RoomClient({ roomId }: { roomId: string }) {
   const [identity, setIdentity] = useState<Identity | null>(null);
 
   useEffect(() => {
-    let clientId = '';
-    try {
-      clientId = window.sessionStorage.getItem(CLIENT_KEY) ?? '';
-      if (!clientId) {
-        clientId = randomId();
-        window.sessionStorage.setItem(CLIENT_KEY, clientId);
-      }
-    } catch {
+    let clientId = readStorage(CLIENT_KEY) ?? '';
+    if (!clientId) {
       clientId = randomId();
+      writeStorage(CLIENT_KEY, clientId);
     }
     setIdentity({ name: readStorage(NAME_KEY), clientId });
   }, []);

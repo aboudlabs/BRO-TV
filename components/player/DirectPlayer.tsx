@@ -8,10 +8,11 @@ interface Props {
   src: string;
   startAt: StartAt | null;
   onLocal: (action: PlaybackAction, time: number) => void;
+  controls?: boolean;
 }
 
 /** مشغل mp4 / webm / m3u8 (عبر hls.js) مع مزامنة كاملة */
-const DirectPlayer = forwardRef<PlayerHandle, Props>(function DirectPlayer({ src, startAt, onLocal }, ref) {
+const DirectPlayer = forwardRef<PlayerHandle, Props>(function DirectPlayer({ src, startAt, onLocal, controls = true }, ref) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const suppressUntil = useRef(0);
   const readyRef = useRef(false);
@@ -129,7 +130,7 @@ const DirectPlayer = forwardRef<PlayerHandle, Props>(function DirectPlayer({ src
       <video
         ref={videoRef}
         className="h-full w-full"
-        controls
+        controls={controls}
         playsInline
         preload="metadata"
         onLoadedMetadata={handleLoadedMetadata}

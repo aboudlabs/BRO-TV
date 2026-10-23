@@ -25,6 +25,7 @@ interface Options {
   onPlayback: (cmd: PlaybackCommand) => void;
   onSync: (time: number, playing: boolean) => void;
   getPlayerState: () => { time: number; playing: boolean };
+  isOwner: boolean;
 }
 
 interface MediaEvent {
@@ -77,7 +78,7 @@ function describeMedia(reason: MediaChangeReason, media: Media, by: string): str
 }
 
 export function useRoom(options: Options) {
-  const { roomId, clientId, name } = options;
+  const { roomId, clientId, name, isOwner } = options;
 
   const [status, setStatus] = useState<RoomStatus>('connecting');
   const [members, setMembers] = useState<Member[]>([]);
@@ -124,20 +125,21 @@ export function useRoom(options: Options) {
     setTimeout(() => setReactions((prev) => prev.filter((r) => r.id !== id)), 3400);
   }, []);
 
-  const runCountdown = useCallback(() => {
+  const runCountdown = useCallback((startAt: number, time: number) => {
     if (countdownTimerRef.current) clearInterval(countdownTimerRef.current);
-    let n = 3;
-    setCountdown(n);
-    countdownTimerRef.current = setInterval(() => {
-      n -= 1;
-      if (n >= 0) {
-        setCountdown(n);
-      } else {
+    const tick = () => {
+      const remaining = startAt - Date.now();
+      if (remaining <= 0) {
         if (countdownTimerRef.current) clearInterval(countdownTimerRef.current);
         countdownTimerRef.current = null;
         setCountdown(null);
+        optsRef.current.onPlayback({ action: 'play', time });
+        return;
       }
-    }, 1000);
+      setCountdown(Math.ceil(remaining / 1000));
+    };
+    tick();
+    countdownTimerRef.current = setInterval(tick, 100);
   }, []);
 
   const shouldNotice = useCallback((key: string, gapMs: number) => {
@@ -220,9 +222,9 @@ export function useRoom(options: Options) {
         pushSystem(`🔄 ${p.by} زامن المشهد معك (${formatTime(p.time)})`);
       })
       .on('broadcast', { event: 'countdown' }, ({ payload }) => {
-        const p = payload as { by: string };
-        runCountdown();
-        pushSystem(`⏱️ ${p.by} بدأ العدّ التنازلي — اضغط تشغيل عند الصفر`);
+        const p = payload as { by: string; startAt: number; time: number };
+        runCountdown(p.startAt, p.time);
+        pushSystem(`⏱️ ${p.by} بدأ العدّ التنازلي — سيبدأ الفيديو تلقائياً`);
       })
       .on('broadcast', { event: 'request_state' }, ({ payload }) => {
         const p = payload as { from: string };
@@ -285,34 +287,40 @@ export function useRoom(options: Options) {
 
   const changeMedia = useCallback(
     (next: Media, reason: MediaChangeReason) => {
+      if (!isOwner) return;
       updateMedia(next);
       setStartAt(null);
       send('media', { media: next, by: name, reason } satisfies MediaEvent);
       pushSystem(describeMedia(reason, next, 'أنت'));
     },
-    [name, pushSystem, send, updateMedia],
+    [isOwner, name, pushSystem, send, updateMedia],
   );
 
   const sendPlayback = useCallback(
     (action: PlaybackAction, time: number) => {
+      if (!isOwner) return;
       send('playback', { action, time, by: name } satisfies PlaybackEvent);
     },
-    [name, send],
+    [isOwner, name, send],
   );
 
   const sendSync = useCallback(
     (time: number, playing: boolean) => {
+      if (!isOwner) return;
       send('sync', { time, playing, by: name } satisfies SyncEvent);
       pushSystem(`🔄 زامنت المشهد مع الجميع (${formatTime(time)})`);
     },
-    [name, pushSystem, send],
+    [isOwner, name, pushSystem, send],
   );
 
   const startCountdown = useCallback(() => {
-    send('countdown', { by: name });
-    runCountdown();
-    pushSystem('⏱️ بدأت العدّ التنازلي — اضغط تشغيل عند الصفر');
-  }, [name, pushSystem, runCountdown, send]);
+    if (!isOwner) return;
+    const startAt = Date.now() + 3500;
+    const time = optsRef.current.getPlayerState().time;
+    send('countdown', { by: name, startAt, time });
+    runCountdown(startAt, time);
+    pushSystem('⏱️ بدأت المزامنة — سيبدأ الفيديو تلقائياً عند الصفر');
+  }, [isOwner, name, pushSystem, runCountdown, send]);
 
   const sendChat = useCallback(
     (text: string) => {

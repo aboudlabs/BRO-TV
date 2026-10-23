@@ -134,6 +134,11 @@ export function useRoom(options: Options) {
         countdownTimerRef.current = null;
         setCountdown(null);
         optsRef.current.onPlayback({ action: 'play', time });
+        // The owner must broadcast the actual play command after the countdown,
+        // otherwise only the owner's local player receives the command.
+        if (optsRef.current.isOwner) {
+          send('playback', { action: 'play', time, by: optsRef.current.name } satisfies PlaybackEvent);
+        }
         return;
       }
       setCountdown(Math.ceil(remaining / 1000));

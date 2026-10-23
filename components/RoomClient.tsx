@@ -53,10 +53,11 @@ export default function RoomClient({ roomId }: { roomId: string }) {
     );
   }
 
-  return <RoomView roomId={roomId} name={identity.name} clientId={identity.clientId} />;
+  const isOwner = readStorage(`brotv:owner:${roomId}`) === identity.clientId;
+  return <RoomView roomId={roomId} name={identity.name} clientId={identity.clientId} isOwner={isOwner} />;
 }
 
-function RoomView({ roomId, name, clientId }: { roomId: string; name: string; clientId: string }) {
+function RoomView({ roomId, name, clientId, isOwner }: { roomId: string; name: string; clientId: string; isOwner: boolean }) {
   const playerRef = useRef<PlayerHandle>(null);
   const [searchOpen, setSearchOpen] = useState(false);
 
@@ -64,6 +65,7 @@ function RoomView({ roomId, name, clientId }: { roomId: string; name: string; cl
     roomId,
     clientId,
     name,
+    isOwner,
     onPlayback: (cmd) => playerRef.current?.apply(cmd),
     onSync: (time, playing) => playerRef.current?.apply({ action: playing ? 'play' : 'pause', time }),
     getPlayerState: () => ({
@@ -168,6 +170,7 @@ function RoomView({ roomId, name, clientId }: { roomId: string; name: string; cl
               playerRef={playerRef}
               reactions={room.reactions}
               countdown={room.countdown}
+              isOwner={isOwner}
               onLocal={handleLocal}
               onOpenSearch={() => setSearchOpen(true)}
             />
@@ -187,11 +190,11 @@ function RoomView({ roomId, name, clientId }: { roomId: string; name: string; cl
               </div>
 
               <div className="flex flex-wrap gap-2">
-                <button type="button" className="btn-primary px-4 py-2.5 text-sm" onClick={() => setSearchOpen(true)}>
+                <button type="button" className="btn-primary px-4 py-2.5 text-sm" onClick={() => setSearchOpen(true)} disabled={!isOwner}>
                   <Clapperboard className="h-4 w-4" />
                   المكتبة والبحث
                 </button>
-                <button type="button" className="btn-ghost" onClick={syncScene} disabled={!media}>
+                <button type="button" className="btn-ghost" onClick={syncScene} disabled={!media || !isOwner}>
                   {media && (media.kind === 'catalog' || media.kind === 'iframe') ? (
                     <Timer className="h-4 w-4" />
                   ) : (

@@ -169,7 +169,6 @@ function RoomView({ roomId, name, clientId, isOwner }: { roomId: string; name: s
               playerRef={playerRef}
               reactions={room.reactions}
               countdown={room.countdown}
-              isOwner={isOwner}
               onLocal={handleLocal}
             />
 
@@ -233,7 +232,7 @@ function RoomView({ roomId, name, clientId, isOwner }: { roomId: string; name: s
                     Sandbox: {media.sandbox ? 'مفعّل' : 'متوقف'}
                   </button>
                   <p className="text-xs leading-relaxed text-champagne-200/55">
-                    إذا لم يعمل الفيديو جرّب سيرفراً آخر، أو أوقف الـ Sandbox (بعض المشغلات ترفضه). المزامنة توحّد توقيت العدّ التنازلي، لكن بعض السيرفرات الخارجية تتطلب أن يضغط كل شخص زر التشغيل داخل المشغّل.
+                    إذا لم يعمل الفيديو جرّب سيرفراً آخر، أو أوقف الـ Sandbox. مع روابط MP4/HLS وYouTube، صاحب الغرفة يحدد التشغيل وتصحّح المزامنة فرق التوقيت دورياً. قد يحتاج كل مشاهد إلى ضغطة تشغيل أولى بسبب سياسة المتصفح. سيرفرات المكتبة الخارجية لا تدعم تحكماً مضموناً من BRO TV.
                   </p>
                 </div>
               </div>

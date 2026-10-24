@@ -36,11 +36,13 @@ interface MediaEvent {
 interface PlaybackEvent {
   action: PlaybackAction;
   time: number;
+  sentAt?: number;
   by: string;
 }
 interface SyncEvent {
   time: number;
   playing: boolean;
+  sentAt?: number;
   by: string;
 }
 interface HeartbeatEvent {
@@ -54,6 +56,7 @@ interface StateEvent {
   media: Media;
   time: number;
   playing: boolean;
+  sentAt?: number;
 }
 interface PresenceMeta {
   name?: string;
@@ -143,7 +146,7 @@ export function useRoom(options: Options) {
         // The owner must broadcast the actual play command after the countdown,
         // otherwise only the owner's local player receives the command.
         if (optsRef.current.isOwner) {
-          send('playback', { action: 'play', time, by: optsRef.current.name } satisfies PlaybackEvent);
+          send('playback', { action: 'play', time, sentAt: Date.now(), by: optsRef.current.name } satisfies PlaybackEvent);
         }
         return;
       }
@@ -218,7 +221,8 @@ export function useRoom(options: Options) {
       })
       .on('broadcast', { event: 'playback' }, ({ payload }) => {
         const p = payload as PlaybackEvent;
-        optsRef.current.onPlayback({ action: p.action, time: p.time });
+        const elapsed = p.action === 'play' ? Math.max(0, Date.now() - (p.sentAt ?? Date.now())) / 1000 : 0;
+        optsRef.current.onPlayback({ action: p.action, time: p.time + elapsed });
         if (p.action === 'play' && shouldNotice('play', 1200)) {
           pushSystem(`▶️ ${p.by} شغّل الفيديو (${formatTime(p.time)})`);
         } else if (p.action === 'pause' && shouldNotice('pause', 1200)) {
@@ -229,7 +233,8 @@ export function useRoom(options: Options) {
       })
       .on('broadcast', { event: 'sync' }, ({ payload }) => {
         const p = payload as SyncEvent;
-        optsRef.current.onSync(p.time, p.playing);
+        const elapsed = p.playing ? Math.max(0, Date.now() - (p.sentAt ?? Date.now())) / 1000 : 0;
+        optsRef.current.onSync(p.time + elapsed, p.playing);
         pushSystem(`🔄 ${p.by} زامن المشهد معك (${formatTime(p.time)})`);
       })
       .on('broadcast', { event: 'heartbeat' }, ({ payload }) => {
@@ -254,14 +259,15 @@ export function useRoom(options: Options) {
         const current = mediaRef.current;
         if (!current || p.from === clientId) return;
         const { time, playing } = optsRef.current.getPlayerState();
-        send('state', { to: p.from, media: current, time, playing } satisfies StateEvent);
+        send('state', { to: p.from, media: current, time, playing, sentAt: Date.now() } satisfies StateEvent);
       })
       .on('broadcast', { event: 'state' }, ({ payload }) => {
         const p = payload as StateEvent;
         if (p.to !== clientId || gotState || mediaRef.current) return;
         gotState = true;
         updateMedia(p.media);
-        setStartAt({ time: p.time, playing: p.playing });
+        const elapsed = p.playing ? Math.max(0, Date.now() - (p.sentAt ?? Date.now())) / 1000 : 0;
+        setStartAt({ time: p.time + elapsed, playing: p.playing });
         pushSystem(`🎞️ تم تحميل «${p.media.title}» من الغرفة`);
       })
       .on('broadcast', { event: 'chat' }, ({ payload }) => {
@@ -336,7 +342,7 @@ export function useRoom(options: Options) {
   const sendPlayback = useCallback(
     (action: PlaybackAction, time: number) => {
       if (!isOwner) return;
-      send('playback', { action, time, by: name } satisfies PlaybackEvent);
+      send('playback', { action, time, sentAt: Date.now(), by: name } satisfies PlaybackEvent);
     },
     [isOwner, name, send],
   );
@@ -344,7 +350,7 @@ export function useRoom(options: Options) {
   const sendSync = useCallback(
     (time: number, playing: boolean) => {
       if (!isOwner) return;
-      send('sync', { time, playing, by: name } satisfies SyncEvent);
+      send('sync', { time, playing, sentAt: Date.now(), by: name } satisfies SyncEvent);
       pushSystem(`🔄 زامنت المشهد مع الجميع (${formatTime(time)})`);
     },
     [isOwner, name, pushSystem, send],
